@@ -41,6 +41,7 @@ class MeioUploadBehavior extends ModelBehavior {
 		'allowedExt' => array('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.ico'),
 		'default' => false, // Not sure what this does
 		'zoomCrop' => false, // Whether to use ZoomCrop or not with PHPThumb
+	    'forceAspectRatio' => false,
 		'thumbnails' => true,
 		'thumbsizes' => array(
 			// Place any custom thumbsize in model config instead,
@@ -854,6 +855,9 @@ class MeioUploadBehavior extends ModelBehavior {
 			if (isset($value['zoomCrop'])) {
 				$params['zoomCrop'] = $value['zoomCrop'];
 			}
+		    if (isset($value['forceAspectRatio'])) {
+				$params['forceAspectRatio'] = $value['forceAspectRatio'];
+			}
 			if (isset($value['watermark'])) {
 				$params['watermark'] = $value['watermark'];
 			}
@@ -879,7 +883,8 @@ class MeioUploadBehavior extends ModelBehavior {
 				'thumbHeight' => 225,
 				'maxDimension' => '',
 				'thumbnailQuality' => $this->__fields[$model->alias][$fieldName]['thumbnailQuality'],
-				'zoomCrop' => false
+				'zoomCrop' => false,
+			    'forceAspectRatio' => false
 			),
 			$params);
 
@@ -902,6 +907,9 @@ class MeioUploadBehavior extends ModelBehavior {
 		$phpThumb->setParameter('zc', $this->__fields[$model->alias][$fieldName]['zoomCrop']);
 		if (isset($params['zoomCrop'])){
 			$phpThumb->setParameter('zc', $params['zoomCrop']);
+		}
+	    if (isset($params['forceAspectRatio'])){
+			$phpThumb->setParameter('far', $params['forceAspectRatio']);
 		}
 		if (isset($params['watermark'])){
 			$phpThumb->fltr = array("wmi|". IMAGES . $params['watermark']."|BR|50|5");
