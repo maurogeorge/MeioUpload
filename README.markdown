@@ -56,3 +56,90 @@ The behavior code will save the uploaded file's name in the 'filename' field in 
 
 ### Deleting an uploaded file while keeping the record
 Flag the file for deletion by setting `data[Model][filename][remove]` to something non-empty, e.g. `TRUE`. The uploaded file including possible thumbnails will then be deleted together with adherent database fields upon save. Note that the record will be preserved, only the file meta-data columns will be reset.
+
+## Creating thumbnails
+
+### Installation
+
+Download the latest copy of phpThumb and extract it into your vendors directory. Should end up like: /vendors/phpThumb/{files}. (http://phpthumb.sourceforge.net)
+
+### Basic usage
+
+In a model that needs uploading with thumbnails generation, replace the class declaration with something similar to the following:
+
+	<?php
+	class Image extends AppModel {
+		var $name = 'Image';
+		var $actsAs = array(
+			'MeioUpload.MeioUpload' => array(
+				'filename' => array(
+					'thumbsizes' => array(
+						'320x90' => array(
+							'width' => 320,
+							'height' => 90
+						)
+					)    	            
+				)
+			)
+		);
+	}
+	?>
+
+in that case we generate one thumb with size of 320x90px. Recalling that on controller and on views the procedure still the same of the default usage.
+
+By default the thumbnails are generated on a dir with the name of the key of our array thumbsizes. In our case the structure created is uploads/image/filename/thumb/320x90.
+
+### Passing params for thumbnails generations
+
+When we are creating thumbnails we are capable of pass params for our thumbnails, in our case we used two params width and height. Lets see these and others.
+
+#### width
+
+How you could imagine it's define the width of our thumbnail, its is defined on pixels.
+
+If not defined the default value are 150.
+
+#### height
+
+Again how you could imagine it's define the height of our thumbnail, its is defined on pixels.
+
+If not defined the default value are 225.
+
+#### forceAspectRatio
+
+Create a  thumbnail with the values specified by "width" and "height" and resizes the original proportionally, it's not cropped, to fit the sizes, if the image is not proporcional the excess will be filled with whitespace. The generated thumbnail image always have the value specified on "width" and "height" and if the image not be proporcional the excess will be filled with whitespace.
+
+We need pass the params of the alignment of our original image is be positioned, the rest of image will be filled with whitespace if the image is not proporcional. The possible values are:
+
+- L = left
+- R = right
+- T = top
+- B = bottom
+- C = center
+- BL = bottom left
+- BR = bottom right
+- TL = top left
+- TR = top right
+
+See on example:
+
+	<?php
+	class Image extends AppModel {
+		var $name = 'Image';
+		var $actsAs = array(
+			'MeioUpload.MeioUpload' => array(
+				'filename' => array(
+					'thumbsizes' => array(
+						'320x90' => array(
+							'width' => 320,
+							'height' => 90,
+							'forceAspectRatio' => 'C',
+						)
+					)    	            
+				)
+			)
+		);
+	}
+	?>
+
+On this example create a thumb image for 320x90px and resizes the original proportionally to fit the sizes, if the image is not proporcional the excedent will be filled with whitespace. And how we used the param "C" the image is aligned on the center of the thumb.
